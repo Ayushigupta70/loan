@@ -305,7 +305,9 @@ const LoanView = () => {
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.text(`Member: ${firstLoan.membershipNumber} - ${memberName}`, 14, 40);
-        doc.text(`Total Loans: ${selectedLoanData.loans.length}`, 14, 47);
+        doc.text(`Total Loans: ${selectedLoanData.loans.length}`, 14, 50);
+        const uniqueLoanTypes = [...new Set(selectedLoanData.loans.map(l => l.typeOfLoan))];
+        doc.text(`Loan Types: ${uniqueLoanTypes.join(", ")}`, 14, 58);
 
         // Create loan details table for PDF - FIXED VERSION
         const loanTableData = getLoanTableData();
@@ -320,25 +322,24 @@ const LoanView = () => {
         // Prepare table data - ensure all values are strings
         const loanData = loanTableData.map((row) => [
             row.sno.toString(),
-            row.loanType || 'N/A',
+            // row.loanType || 'N/A',
             row.membershipNumber || 'N/A',
-            row.amount ? `₹${Number(row.amount).toLocaleString('en-IN')}` : 'N/A',
+            row.amount ? `${Number(row.amount).toLocaleString('en-IN')}` : 'N/A',
             row.date ? new Date(row.date).toLocaleDateString('en-IN') : 'N/A',
-            row.purpose || 'N/A',
-            row.fdrAmount ? `₹${Number(row.fdrAmount).toLocaleString('en-IN')}` : 'N/A',
-            row.fdrScheme || 'N/A'
+            // row.purpose || 'N/A',
+            // row.fdrAmount ? `₹${Number(row.fdrAmount).toLocaleString('en-IN')}` : 'N/A',
+            // row.fdrScheme || 'N/A'
         ]);
 
         // Define table headers
         const headers = [
             { content: 'S.No', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
-            { content: 'Loan Type', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
             { content: 'Membership No', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
             { content: 'Amount', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
             { content: 'Date', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
-            { content: 'Purpose', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
-            { content: 'FDR Amount', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
-            { content: 'FDR Scheme', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } }
+            // { content: 'Purpose', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
+            // { content: 'FDR Amount', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } },
+            // { content: 'FDR Scheme', styles: { fillColor: [63, 81, 181], textColor: 255, fontStyle: 'bold' } }
         ];
 
         try {
@@ -363,13 +364,12 @@ const LoanView = () => {
                 tableWidth: 'auto',
                 columnStyles: {
                     0: { cellWidth: 15 }, // S.No
-                    1: { cellWidth: 25 }, // Loan Type
-                    2: { cellWidth: 30 }, // Membership No
-                    3: { cellWidth: 25 }, // Amount
-                    4: { cellWidth: 25 }, // Date
-                    5: { cellWidth: 40 }, // Purpose
-                    6: { cellWidth: 25 }, // FDR Amount
-                    7: { cellWidth: 30 }  // FDR Scheme
+                    1: { cellWidth: 'auto' }, // Membership No
+                    2: { cellWidth: "auto" }, // Amount
+                    3: { cellWidth: 'auto' }, // Date
+                    // 4: { cellWidth: 40 }, // Purpose
+                    // 5: { cellWidth: 25 }, // FDR Amount
+                    // 6: { cellWidth: 30 }  // FDR Scheme
                 }
             });
         } catch (error) {
@@ -426,7 +426,10 @@ const LoanView = () => {
         // Member details section
         doc.text(`Member Name: ${memberName}`, 14, 40);
         doc.text(`Membership Number: ${firstLoan.membershipNumber}`, 14, 47);
-        doc.text(`Total Cheques: ${selectedLoanData.pdc.length}`, 14, 54);
+        doc.text(`Total Cheques: ${selectedLoanData.pdc.length}`, 14, 53);
+        // Display Loan Types List
+        const uniqueLoanTypes = [...new Set(selectedLoanData.loans.map(l => l.typeOfLoan))];
+        doc.text(`Loan Types: ${uniqueLoanTypes.join(", ")}`, 14, 58);
 
         // Calculate status counts
         const statusCounts = {};
@@ -731,9 +734,9 @@ const LoanView = () => {
                                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Member Name</TableCell>
                                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Amount</TableCell>
                                                 <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Purpose</TableCell>
-                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>FDR Amount</TableCell>
-                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>FDR Scheme</TableCell>
+                                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Purpose</TableCell>
+                                                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>FDR Amount</TableCell> */}
+                                                {/* <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>FDR Scheme</TableCell> */}
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -777,21 +780,21 @@ const LoanView = () => {
                                                             {row.date ? new Date(row.date).toLocaleDateString('en-IN') : 'N/A'}
                                                         </Typography>
                                                     </TableCell>
-                                                    <TableCell>
+                                                    {/* <TableCell>
                                                         <Typography variant="body2" sx={{ maxWidth: 200 }}>
                                                             {row.purpose || 'N/A'}
                                                         </Typography>
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    </TableCell> */}
+                                                    {/* <TableCell>
                                                         <Typography variant="body2" fontFamily="monospace">
                                                             {row.fdrAmount ? `₹${Number(row.fdrAmount).toLocaleString('en-IN')}` : 'N/A'}
                                                         </Typography>
                                                     </TableCell>
-                                                    <TableCell>
+                                                    {/* <TableCell>
                                                         <Typography variant="body2">
                                                             {row.fdrScheme || 'N/A'}
                                                         </Typography>
-                                                    </TableCell>
+                                                    </TableCell> */}
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -919,3 +922,5 @@ const LoanView = () => {
 };
 
 export default LoanView;
+
+
